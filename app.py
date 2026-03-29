@@ -16,8 +16,8 @@ ESP32_API_KEY = "ESP32-APEX-SECRET-KEY-abc123"
 
 # ─── Mock Account Data ────────────────────────────────────────────────────────
 MOCK_BANK_DATA = {
-    "john_doe": {
-        "account_holder": "John Doe",
+    "user": {
+        "account_holder": "user",
         "account_number": "XXXX-XXXX-9876",
         "balance": 1200.50,
         "recent_transactions": [
