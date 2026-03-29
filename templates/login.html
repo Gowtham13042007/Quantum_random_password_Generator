@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Bank — Secure Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink:      #0d0f14;
+            --ink-mid:  #3a3f52;
+            --ink-soft: #8892a4;
+            --surface:  #f8f7f4;
+            --card:     #ffffff;
+            --gold:     #c9a84c;
+            --gold-dim: #e8d49a;
+            --danger:   #c0392b;
+            --border:   #e4e2dc;
+            --radius:   14px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        /* ── Left Panel ──────────────────────────────── */
+        .left-panel {
+            background: var(--ink);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 52px 56px;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -120px; right: -120px;
+            width: 480px; height: 480px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; left: -60px;
+            width: 340px; height: 340px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201,168,76,0.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 1;
+        }
+        .brand-icon {
+            width: 44px; height: 44px;
+            background: var(--gold);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-icon svg { width: 24px; height: 24px; }
+        .brand-name {
+            font-family: 'DM Serif Display', serif;
+            color: #fff;
+            font-size: 1.35rem;
+            letter-spacing: 0.5px;
+        }
+
+        .left-content {
+            z-index: 1;
+        }
+        .left-tagline {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.2rem, 3.2vw, 3rem);
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .left-tagline em {
+            color: var(--gold);
+            font-style: italic;
+        }
+        .left-desc {
+            color: var(--ink-soft);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            max-width: 320px;
+        }
+
+        /* ── Right Panel (Login form) ──────────────── */
+        .right-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-heading {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .login-sub {
+            color: var(--ink-soft);
+            font-size: 0.9rem;
+            margin-bottom: 36px;
+        }
+
+        .error-box {
+            background: #fff5f5;
+            border: 1px solid #f5c6c6;
+            border-left: 3px solid var(--danger);
+            border-radius: 8px;
+            padding: 13px 16px;
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .error-box svg { flex-shrink: 0; margin-top: 1px; }
+
+        .field {
+            margin-bottom: 18px;
+        }
+        .field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+        .input-wrap {
+            position: relative;
+        }
+        .input-wrap .field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-soft);
+            width: 17px; height: 17px;
+            pointer-events: none;
+        }
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 44px 13px 42px; /* Increased right padding for toggle */
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--ink);
+            background: var(--card);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-wrap input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+        }
+        .input-wrap input::placeholder { color: #c0c4cc; }
+
+        /* Toggle Button Styling */
+        .toggle-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--ink-soft);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+        .toggle-btn:hover { color: var(--gold); }
+        .toggle-btn svg { width: 18px; height: 18px; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--ink);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.15s;
+            letter-spacing: 0.3px;
+        }
+        .submit-btn::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.07) 100%);
+        }
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(13,15,20,0.25);
+        }
+        .submit-btn:active { transform: translateY(0); }
+
+        .divider {
+            display: flex; align-items: center; gap: 14px;
+            margin: 28px 0 20px;
+            color: var(--ink-soft);
+            font-size: 0.8rem;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1;
+            height: 1px; background: var(--border);
+        }
+
+        .device-hint {
+            background: linear-gradient(135deg, #fffbf0, #fff8e6);
+            border: 1px solid #f0e0b0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .device-hint svg { flex-shrink: 0; margin-top: 2px; color: var(--gold); width: 18px; height: 18px; }
+        .device-hint p {
+            font-size: 0.82rem;
+            color: #7a5f20;
+            line-height: 1.5;
+        }
+        .device-hint strong { font-weight: 600; }
+
+        .footer-note {
+            text-align: center;
+            color: var(--ink-soft);
+            font-size: 0.78rem;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            .left-panel { display: none; }
+        }
+
+        .login-box { animation: slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="left-panel">
+    <div class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0d0f14" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="3"/>
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                <line x1="12" y1="12" x2="12" y2="16"/>
+                <circle cx="12" cy="12" r="1.5" fill="#0d0f14"/>
+            </svg>
+        </div>
+        <span class="brand-name">Apex Bank</span>
+    </div>
+
+    <div class="left-content">
+        <h1 class="left-tagline">Banking with<br><em>zero compromise</em><br>on security.</h1>
+        <p class="left-desc">Your credentials rotate automatically every 2 minutes via your paired hardware token. No static passwords, no risk.</p>
+    </div>
+</div>
+
+<div class="right-panel">
+    <div class="login-box">
+        <h2 class="login-heading">Welcome back.</h2>
+        <p class="login-sub">Sign in with your rotating hardware token password.</p>
+
+        {% if error %}
+        <div class="error-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" autocomplete="off">
+            <div class="field">
+                <label for="username">Username</label>
+                <div class="input-wrap">
+                    <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <input type="text" id="username" name="username" placeholder="your.username" required autofocus>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="password">Token Password</label>
+                <div class="input-wrap">
+                    <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input type="password" id="password" name="password" placeholder="Enter current token" required>
+                    
+                    <button type="button" id="togglePassword" class="toggle-btn" aria-label="Toggle password visibility">
+                        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Authenticate Securely →</button>
+        </form>
+
+        <div class="divider">Token Info</div>
+
+        <div class="device-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3"/>
+            </svg>
+            <p><strong>Where's my password?</strong> Check your ESP32 paired device display. The token refreshes every 2 minutes automatically via WiFi or Bluetooth.</p>
+        </div>
+
+        <p class="footer-note">Protected by Apex Hardware Token Security · v3.0</p>
+    </div>
+</div>
+
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    const eyeIcon = document.querySelector('#eyeIcon');
+
+    togglePassword.addEventListener('click', function (e) {
+        // Toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        
+        // Toggle the eye icon SVG path
+        if (type === 'password') {
+            eyeIcon.innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            `;
+        } else {
+            eyeIcon.innerHTML = `
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            `;
+        }
+    });
+</script>
+
+</body>
+</html>

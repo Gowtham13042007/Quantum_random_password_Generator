@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Token Display | Apex Bank</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink:     #0d0f14;
+            --gold:    #c9a84c;
+            --gold-bg: rgba(201,168,76,0.10);
+            --green:   #1a9c6a;
+            --surface: #f4f3ef;
+            --card:    #ffffff;
+            --border:  #e8e6e0;
+            --soft:    #8892a4;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 32px;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            animation: fadeUp 0.5s ease both;
+        }
+        .brand-row {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 10px;
+        }
+        .brand-icon {
+            width: 38px; height: 38px;
+            background: var(--gold);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-icon svg { width: 20px; height: 20px; }
+        .brand-name {
+            font-family: 'DM Serif Display', serif;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+        .page-title {
+            color: rgba(255,255,255,0.35);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .token-card {
+            background: var(--card);
+            border-radius: 18px;
+            width: 320px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: fadeUp 0.5s ease both;
+        }
+        .token-card:nth-child(2) { animation-delay: 0.1s; }
+
+        .card-top {
+            background: var(--ink);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 20px 24px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-user {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), #7a5518);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--ink);
+            flex-shrink: 0;
+        }
+        .user-name {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .user-role {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+        }
+        .live-badge {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(26,156,106,0.15);
+            border: 1px solid rgba(26,156,106,0.3);
+            color: #4dd4a0;
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        .live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #4dd4a0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        .card-body {
+            padding: 28px 24px 24px;
+            text-align: center;
+        }
+        .password-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--soft);
+            margin-bottom: 14px;
+        }
+       .password-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem; /* Reduced size to fit 16 digits */
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 1px; /* Reduced spacing */
+    background: var(--gold-bg);
+    border: 1.5px dashed rgba(201,168,76,0.4);
+    border-radius: 12px;
+    padding: 18px 10px;
+    display: block;
+    margin-bottom: 16px;
+    word-break: break-all; /* Ensures it breaks if still too long */
+    overflow-wrap: anywhere;
+}
+        .password-value.flash {
+            background: rgba(26,156,106,0.1);
+            border-color: rgba(26,156,106,0.5);
+            color: var(--green);
+        }
+
+        .copy-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: var(--ink);
+            color: rgba(255,255,255,0.7);
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: #1e2230;
+            color: #fff;
+        }
+        .copy-btn svg { width: 14px; height: 14px; }
+
+        /* Footer note */
+        .footer-note {
+            color: rgba(255,255,255,0.2);
+            font-size: 0.78rem;
+            text-align: center;
+            animation: fadeUp 0.5s 0.25s ease both;
+        }
+        .footer-note span {
+            color: rgba(201,168,76,0.6);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Auto-refresh indicator */
+        .refresh-row {
+            display: flex; align-items: center; gap: 10px;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.78rem;
+            animation: fadeUp 0.5s 0.3s ease both;
+        }
+        .refresh-ring {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+        }
+        .refresh-ring.spinning {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <div class="brand-row">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0d0f14" stroke-width="2.2" stroke-linecap="round">
+                <rect x="2" y="7" width="20" height="14" rx="3"/>
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+            </svg>
+        </div>
+        <span class="brand-name">Apex Bank</span>
+    </div>
+    <p class="page-title">Live Token Display</p>
+</div>
+
+<div class="cards-grid" id="cards-grid">
+    {% for username, password in passwords.items() %}
+    <div class="token-card" id="card-{{ username }}">
+        <div class="card-top">
+            <div class="card-user">
+                <div class="user-avatar">{{ username[0].upper() }}</div>
+                <div>
+                    <div class="user-name">{{ username }}</div>
+                    <div class="user-role">{% if username == 'admin' %}Administrator{% else %}Account Holder{% endif %}</div>
+                </div>
+            </div>
+            <div class="live-badge">
+                <span class="live-dot"></span>
+                Live
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="password-label">Current Token Password</div>
+            <code class="password-value" id="pass-{{ username }}">{{ password }}</code>
+            <button class="copy-btn" onclick="copyPass('{{ username }}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy password
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="refresh-row">
+    <div class="refresh-ring" id="refresh-ring"></div>
+    <span id="refresh-label">Auto-refreshes when ESP32 pushes a new password</span>
+</div>
+
+<p class="footer-note">Open this page on any device on the same network · <span>http://[server-ip]:5000/token</span></p>
+
+<script>
+    // 1. Polling Logic: Updates text when server data changes
+    async function pollPasswords() {
+        const ring = document.getElementById('refresh-ring');
+        if (ring) ring.classList.add('spinning');
+        try {
+            const r = await fetch('/api/passwords');
+            if (r.ok) {
+                const data = await r.json();
+                for (const [user, pass] of Object.entries(data)) {
+                    const el = document.getElementById('pass-' + user);
+                    if (el && el.textContent.trim() !== pass.toString().trim()) {
+                        el.textContent = pass;
+                        el.classList.add('flash');
+                        setTimeout(() => el.classList.remove('flash'), 1500);
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn("Polling connection error.");
+        }
+        if (ring) ring.classList.remove('spinning');
+    }
+
+    // 2. Main Copy Controller
+    function copyPass(username) {
+        const el = document.getElementById('pass-' + username);
+        if (!el) return;
+        const textToCopy = el.textContent.trim();
+
+        // Try modern Clipboard API first (HTTPS/Localhost only)
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                updateButtonState(username);
+            }).catch(err => {
+                fallbackCopy(textToCopy, username);
+            });
+        } else {
+            // Use Fallback for HTTP / IP-based access
+            fallbackCopy(textToCopy, username);
+        }
+    }
+
+    // 3. Fallback: Works on non-secure IP access
+    function fallbackCopy(text, username) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) updateButtonState(username);
+        } catch (err) {
+            console.error('Unable to copy', err);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    // 4. UI Update: Visual feedback for successful copy
+    function updateButtonState(username) {
+        const el = document.getElementById('pass-' + username);
+        const btn = el.parentElement.querySelector('.copy-btn');
+        const origContent = btn.innerHTML;
+        
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+        btn.style.background = 'rgba(26,156,106,0.15)';
+        btn.style.color = '#4dd4a0';
+        
+        setTimeout(() => { 
+            btn.innerHTML = origContent; 
+            btn.style.background = ''; 
+            btn.style.color = ''; 
+        }, 2000);
+    }
+
+    setInterval(pollPasswords, 3000);
+</script>
+</body>
+</html>
