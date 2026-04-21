@@ -141,6 +141,5 @@ void loop() {
     http.end();
   }
 
-  // 2 minute interval
   delay(120000);
 }
