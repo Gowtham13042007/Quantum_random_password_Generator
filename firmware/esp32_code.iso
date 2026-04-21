@@ -3,27 +3,26 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-// --- Optimized Configuration ---
+
 #define ADC_PIN             34
 #define SAMPLE_DURATION_MS  2000
-#define MAX_SAMPLES         8000     // Increased for better entropy
+#define MAX_SAMPLES         8000     
 #define PASSWORD_LEN        16      
 #define REQUIRED_BITS       (PASSWORD_LEN * 8)
 
-// Static buffers (avoid stack overflow)
+
 static uint8_t rawBits[MAX_SAMPLES];
 static uint8_t debiased[MAX_SAMPLES];
 
-// --- Network ---
+
 const char* ssid = "OPPO A3 Pro 5G";
 const char* wifi_password = "Gowtham$$4";
 const char* serverUrl = "http://10.206.167.62:5000/api/update-password";
 const char* apiKey = "ESP32-APEX-SECRET-KEY-abc123";
 const char* targetUser = "john_doe";
 
-// --- Functions ---
 
-// Von Neumann Debiasing
+
 int vonNeumannDebias(const uint8_t* raw, int rawLen, uint8_t* out) {
   int outLen = 0;
   for (int i = 0; i + 1 < rawLen; i += 2) {
@@ -35,7 +34,7 @@ int vonNeumannDebias(const uint8_t* raw, int rawLen, uint8_t* out) {
   return outLen;
 }
 
-// Convert 8 bits → printable char (reduced bias)
+
 char bitsToChar(const uint8_t* bits) {
   uint32_t val = 0;
   for (int i = 0; i < 8; i++) {
@@ -44,7 +43,7 @@ char bitsToChar(const uint8_t* bits) {
   return (char)(33 + (val & 0x5F));  // Better than modulo
 }
 
-// Generate password
+
 String generateSecurePassword() {
   int numSamples = 0;
   int constantCount = 0;
@@ -54,18 +53,18 @@ String generateSecurePassword() {
   while (numSamples < MAX_SAMPLES && (millis() - startMs < SAMPLE_DURATION_MS)) {
     int adcVal = analogRead(ADC_PIN);
 
-    // Health check
+   
     if (adcVal == lastVal) constantCount++;
     else constantCount = 0;
     lastVal = adcVal;
 
     if (constantCount > 300) return "ERR_STATIC_SIGNAL";
 
-    // Improved entropy mixing
+   
     uint8_t bit = (adcVal ^ (adcVal >> 1)) & 0x01;
     rawBits[numSamples++] = bit;
 
-    // Add jitter to sampling
+    
     delayMicroseconds(50 + (esp_random() % 50));
   }
 
